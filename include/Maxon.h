@@ -10,8 +10,8 @@ typedef int BOOL;
 typedef void* HANDLE;
 unsigned int errorCode = 0;
 
-class MaxonDCMotor {
-public:
+class Motor{
+private:
     unsigned short m_NodeId;
     void* m_keyHandle;
     string m_portName;
@@ -23,6 +23,19 @@ public:
     static string deviceName;
     static string protocolStackName;
     static string interfaceName;
+
+protected:
+    virtual BOOL ifOpen() = 0;
+
+public:
+    virtual void openDevice() = 0;
+    virtual BOOL setOperationMode(char operationMode) = 0;
+    virtual BOOL Enable() = 0;
+    virtual BOOL Disable() = 0;
+};
+
+class MaxonDCMotor : public Motor{
+public:
 
     MaxonDCMotor(BOOL Default);
     MaxonDCMotor(char* portName, char* deviceName, char* protocolStackName, char* interfaceName, int operationMode);
@@ -38,9 +51,9 @@ public:
     BOOL Disable();
 };
 
-unsigned short MaxonDCMotor::deviceNum = 0;
-string MaxonDCMotor::deviceName = "EPOS4";
-string MaxonDCMotor::protocolStackName = "MAXON SERIAL V2";
-string MaxonDCMotor::interfaceName = "USB";
+unsigned short MaxonDCMotor::Motor::deviceNum = 0;
+string MaxonDCMotor::Motor::deviceName = "EPOS4";
+string MaxonDCMotor::Motor::protocolStackName = "MAXON SERIAL V2";
+string MaxonDCMotor::Motor::interfaceName = "USB";
 
 #endif

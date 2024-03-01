@@ -1,0 +1,3 @@
+/Users/platinum/Documents/LocalRepository/Maxon/MaxonDCMotor-C/build/CMakeFiles/app.dir
+/Users/platinum/Documents/LocalRepository/Maxon/MaxonDCMotor-C/build/CMakeFiles/edit_cache.dir
+/Users/platinum/Documents/LocalRepository/Maxon/MaxonDCMotor-C/build/CMakeFiles/rebuild_cache.dir
