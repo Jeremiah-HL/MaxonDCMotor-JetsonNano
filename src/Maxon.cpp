@@ -3,6 +3,11 @@
 #include "Maxon.h"
 using namespace std;
 
+unsigned short MaxonDCMotor::Motor::deviceNum = 0;
+string MaxonDCMotor::Motor::deviceName = "EPOS4";
+string MaxonDCMotor::Motor::protocolStackName = "MAXON SERIAL V2";
+string MaxonDCMotor::Motor::interfaceName = "USB";
+
 MaxonDCMotor::MaxonDCMotor(BOOL Default) {
     m_keyHandle = NULL;
     m_NodeId = deviceNum;
@@ -11,7 +16,7 @@ MaxonDCMotor::MaxonDCMotor(BOOL Default) {
     m_operationMode = OMD_HOMING_MODE;
     m_ifDefault = 1;
     deviceNum++;
-    cout << "[Motor Node id : " << this->m_NodeId << "]: Default Parameters Set Successfully!" << endl;
+    stdMsgPrintOut("Default Parameters Set Successfully!", *this);
 }
 
 MaxonDCMotor::MaxonDCMotor(char* portName, char* deviceName, char* protocolStackName, char* interfaceName, int operationMode) {
@@ -30,36 +35,35 @@ MaxonDCMotor::MaxonDCMotor(char* portName, char* deviceName, char* protocolStack
             m_portName = portName;
             m_baudrate = lBaudrate;
 
-            cout << "====================" << endl;
-            cout << "Created Successfully" << endl;
-            cout << "Port Name : " << m_portName << endl;
-            cout << "Node ID   : " << m_NodeId << endl;
-            cout << "Baudrate  : " << m_baudrate << endl;
-            if (VCS_SetOperationMode(m_keyHandle, m_NodeId, m_operationMode, &errorCode))cout << "Set Operation Mode : " << m_operationMode << endl;
-            cout << "====================" << endl;
+            stdMsgPrintOut("Created Successfully", *this);
+            if (VCS_SetOperationMode(m_keyHandle, m_NodeId, m_operationMode, &errorCode)) {
+                stdMsgPrintOut("Mode Setting", *this);
+                cout << "Set Operation Mode : " << m_operationMode << endl;
+            }
             deviceNum++;
         }
     }
     else {
         m_keyHandle = 0;
-        cout << "Failed to create, Check your device or other parameters" << endl;
+        cout << "Failed to open, Check your device or other parameters" << endl;
+        errorCodePrintOut(errorCode, *this);
     }
 }
 
 MaxonDCMotor::~MaxonDCMotor() { 
     deviceNum--; 
     VCS_CloseDevice(m_keyHandle, &errorCode);
-    cout << "[Motor Node id : " << this->m_NodeId << "]: Closing... Error Code : " << errorCode << endl;
+    stdMsgPrintOut("Closing...", *this);
 }
 
 
 BOOL MaxonDCMotor::ifOpen() {
-    cout << "[Motor Node id : " << this->m_NodeId << "]: Haven't Opened This Motor..." << endl;
+    stdMsgPrintOut("Haven't Opened This Motor...", *this);
     return false;
 }
 
 
-void MaxonDCMotor::openMotor() {
+void MaxonDCMotor::openDevice() {
     char deviceNameArray[40];
     char protocolStackNameArray[40];
     char interfaceNameArray[40];
@@ -71,36 +75,50 @@ void MaxonDCMotor::openMotor() {
     strcpy(m_portNameArray, m_portName.c_str());
 
     m_keyHandle = VCS_OpenDevice(deviceNameArray, protocolStackNameArray, interfaceNameArray, m_portNameArray, &errorCode);
-    if (!m_keyHandle)  cout << "[Motor Node id : " << this->m_NodeId << "]: Failed to Open This Motor..." << endl;
+    if (!m_keyHandle) {
+        stdMsgPrintOut("Failed to Open This Motor...", *this);
+        errorCodePrintOut(errorCode, *this);
+    }
 }
 
 BOOL MaxonDCMotor::setOperationMode(char operationMode) {
     if (m_keyHandle == NULL) return ifOpen();
     if (VCS_SetOperationMode(m_keyHandle, m_NodeId, operationMode, &errorCode)) {
         m_operationMode = operationMode;
-        cout << "[Motor Node id : " << this->m_NodeId << "]: Operation Set Successfully!" << endl;
+        stdMsgPrintOut("Operation Set Successfully!", *this);
         return true;
     }
-    cout << "[Motor Node id : " << this->m_NodeId << "]: Failed to Set New Operation!" << endl;
+    stdMsgPrintOut("Failed to Set New Operation!", *this);
+    errorCodePrintOut(errorCode, *this);
     return false;
 }
 
 BOOL MaxonDCMotor::Enable() {
     if (m_keyHandle == NULL) return ifOpen();
     if (VCS_SetEnableState(m_keyHandle, m_NodeId, &errorCode)) {
-        cout << "[Motor Node id : " << this->m_NodeId << "]: Enabled..." << endl;
+        stdMsgPrintOut("Enabled...", *this);
         return true;
     }
-    cout << "[Motor Node id : " << this->m_NodeId << "]: Failed to Enable!" << endl;
+    stdMsgPrintOut("Failed to Enable!", *this);
+    errorCodePrintOut(errorCode, *this);
     return false;
 }
 
 BOOL MaxonDCMotor::Disable() {
     if (m_keyHandle == NULL) return ifOpen();
     if (VCS_SetDisableState(m_keyHandle, m_NodeId, &errorCode)) {
-        cout << "Maxon DC Motor Node : " << m_NodeId << " Disabled..." << endl;
+        stdMsgPrintOut("Disabled...", *this);
         return true;
     }
-    cout << "Maxon DC Motor Node : " << m_NodeId << " Failed to Disable!" << endl;
+    stdMsgPrintOut("Failed to Disabled...", *this);
+    errorCodePrintOut(errorCode, *this);
     return false;
 }
+
+void Motor::setNodeId(WORD nodeId){
+    if (!(m_keyHandle == NULL)) stdMsgPrintOut("already opened or auto-opened!", *this);
+    else m_NodeId = nodeId;
+}
+
+string Motor::getPortName() { return m_portName; }
+WORD Motor::getNodeId() { return m_NodeId; }

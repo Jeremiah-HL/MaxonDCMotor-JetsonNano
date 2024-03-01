@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/platinum/Documents/LocalRepository/Maxon/MaxonDCMotor-C/src/Test.cpp" "CMakeFiles/app.dir/src/Test.cpp.o" "gcc" "CMakeFiles/app.dir/src/Test.cpp.o.d"
+  "/Users/platinum/Documents/LocalRepository/Maxon/MaxonDCMotor-C/src/main.cpp" "CMakeFiles/app.dir/src/main.cpp.o" "gcc" "CMakeFiles/app.dir/src/main.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

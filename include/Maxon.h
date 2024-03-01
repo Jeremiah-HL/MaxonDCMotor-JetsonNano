@@ -5,13 +5,23 @@
 using namespace std;
 
 typedef unsigned short WORD;
-typedef unsigned long DWORD;
+typedef unsigned int DWORD;
 typedef int BOOL;
 typedef void* HANDLE;
 unsigned int errorCode = 0;
 
+void stdMsgPrintOut(string msg, Motor motor){
+    cout << "[Motor Node Id : " << motor.getNodeId() << " ]: ";
+    cout << msg << endl;
+}
+
+void errorCodePrintOut(unsigned int errorCode, Motor motor){
+    string msg = "ErrorCode is as followed : " + to_string(errorCode);
+    stdMsgPrintOut(msg, motor);
+}
+
 class Motor{
-private:
+protected:
     unsigned short m_NodeId;
     void* m_keyHandle;
     string m_portName;
@@ -19,19 +29,24 @@ private:
 
     int m_baudrate = 1000000;
     BOOL m_ifDefault = 0;
+
     static unsigned short deviceNum;
     static string deviceName;
     static string protocolStackName;
     static string interfaceName;
 
-protected:
-    virtual BOOL ifOpen() = 0;
+    virtual BOOL ifOpen() {};
 
 public:
-    virtual void openDevice() = 0;
-    virtual BOOL setOperationMode(char operationMode) = 0;
-    virtual BOOL Enable() = 0;
-    virtual BOOL Disable() = 0;
+    virtual void openDevice() {};
+    virtual BOOL setOperationMode(char operationMode) {};
+    virtual BOOL Enable() {};
+    virtual BOOL Disable() {};
+
+    void setNodeId(WORD nodeId);
+    string getPortName();
+    WORD getNodeId();
+    
 };
 
 class MaxonDCMotor : public Motor{
@@ -42,18 +57,14 @@ public:
     ~MaxonDCMotor();
 
 protected:
-    BOOL ifOpen();
+    BOOL ifOpen() override;
 
 public:
-    void openMotor();
-    BOOL setOperationMode(char operationMode);
-    BOOL Enable();
-    BOOL Disable();
-};
+    void openDevice() override;
+    BOOL setOperationMode(char operationMode) override;
+    BOOL Enable() override;
+    BOOL Disable() override;
 
-unsigned short MaxonDCMotor::Motor::deviceNum = 0;
-string MaxonDCMotor::Motor::deviceName = "EPOS4";
-string MaxonDCMotor::Motor::protocolStackName = "MAXON SERIAL V2";
-string MaxonDCMotor::Motor::interfaceName = "USB";
+};
 
 #endif

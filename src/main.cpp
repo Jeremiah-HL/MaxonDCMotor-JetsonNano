@@ -1,8 +1,13 @@
 ﻿#include <iostream>
-#include <Definitions.h>
+#include "Definitions.h"
+#include "Maxon.h"
 #define INITIALVALUE 0
 
 double pi = 3.14;
+// typedef unsigned int DWORD;
+// typedef unsigned short WORD;
+// typedef bool BOOL;
+// typedef void* HANDLE;
 
 int main()
 {
@@ -14,7 +19,7 @@ int main()
     HANDLE keyHandle = 0;
     BOOL status = INITIALVALUE;
     int FLAG = 0;
-    bool s = TRUE;
+    bool s = true;
     std::string book = "What the Fuck are you doing?";
     // 打开设备
     keyHandle = VCS_OpenDevice(deviceName, protocolStackName, interfaceName, portName, &errorCode);
